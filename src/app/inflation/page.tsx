@@ -1,27 +1,62 @@
 "use client";
 import { useState } from "react";
 import { Bar } from "react-chartjs-2";
+import inflationData from "@/data/inflationData"; // Adjust the path as needed
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+} from "chart.js";
 
-type InflationData = { year: number; value: number };
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+);
 
 const InflationCalculator = () => {
     const [amount, setAmount] = useState<number>(1.0);
-    const [fromYear, setFromYear] = useState<number>(1914);
-    const [toYear, setToYear] = useState<number>(2024);
-    const [calculatedAmount, setCalculatedAmount] = useState<number | null>(
-        null
-    );
-    const [inflationData, setInflationData] = useState<InflationData[]>([]);
+    const [startYear, setStartYear] = useState<number>(1914);
+    const [endYear, setEndYear] = useState<number>(2024);
+    const [adjustedAmount, setAdjustedAmount] = useState<number | null>(null);
+    const [chartData, setChartData] = useState<number[]>([]);
 
-    const calculateInflation = async () => {
-        const inflationAdjustedAmount = amount * 30.67; // Example multiplier
-        setCalculatedAmount(inflationAdjustedAmount);
+    const calculateInflation = () => {
+        if (startYear in inflationData && endYear in inflationData) {
+            const startValue = inflationData[startYear];
+            const endValue = inflationData[endYear];
+            const adjusted = (amount / startValue) * endValue;
 
-        setInflationData([
-            { year: 1914, value: 1 },
-            { year: 2024, value: inflationAdjustedAmount },
-        ]);
+            setAdjustedAmount(adjusted);
+
+            // Generate chart data for yearly inflation change
+            const years = Array.from(
+                { length: endYear - startYear + 1 },
+                (_, i) => startYear + i
+            );
+            const values = years.map(
+                (year) => (amount / startValue) * inflationData[year]
+            );
+            setChartData(values);
+        } else {
+            alert(
+                "Please select valid years within the range of available data."
+            );
+        }
     };
+
+    // Generate options for the dropdowns
+    const yearOptions = Array.from(
+        { length: 2024 - 1914 + 1 },
+        (_, i) => 1914 + i
+    );
 
     return (
         <div className="min-h-screen p-6">
@@ -29,107 +64,100 @@ const InflationCalculator = () => {
                 Inflation Calculator
             </h1>
 
-            <div className="max-w-3xl mx-auto bg-white p-8 rounded shadow-lg">
-                <div className="grid gap-4 sm:grid-cols-2">
-                    <div>
-                        <label className="block text-gray-700">Amount</label>
-                        <input
-                            type="number"
-                            value={amount}
-                            onChange={(e) =>
-                                setAmount(parseFloat(e.target.value) || 0)
-                            }
-                            className="w-full p-2 border rounded"
-                        />
-                    </div>
+            <div className="flex flex-wrap gap-8 justify-center max-w-5xl mx-auto">
+                {/* Input Section */}
+                <div className="bg-white p-6 rounded shadow-lg w-full md:w-1/3">
+                    <label className="block text-gray-700">Amount ($)</label>
+                    <input
+                        type="number"
+                        value={amount}
+                        onChange={(e) =>
+                            setAmount(
+                                Math.max(0, parseFloat(e.target.value) || 0)
+                            )
+                        }
+                        className="w-full p-2 border rounded mb-4"
+                    />
 
-                    <div>
-                        <label className="block text-gray-700">From</label>
-                        <select
-                            value={fromYear}
-                            onChange={(e) =>
-                                setFromYear(parseInt(e.target.value, 10) || 0)
-                            }
-                            className="w-full p-2 border rounded"
-                        >
-                            {Array.from(
-                                { length: 111 },
-                                (_, i) => 1914 + i
-                            ).map((year) => (
-                                <option key={year} value={year}>
-                                    {year}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    <label className="block text-gray-700">From Year</label>
+                    <select
+                        value={startYear}
+                        onChange={(e) => setStartYear(parseInt(e.target.value))}
+                        className="w-full p-2 border rounded mb-4"
+                    >
+                        {yearOptions.map((year) => (
+                            <option key={year} value={year}>
+                                {year}
+                            </option>
+                        ))}
+                    </select>
 
-                    <div>
-                        <label className="block text-gray-700">To</label>
-                        <select
-                            value={toYear}
-                            onChange={(e) =>
-                                setToYear(parseInt(e.target.value, 10) || 0)
-                            }
-                            className="w-full p-2 border rounded"
-                        >
-                            {Array.from(
-                                { length: 111 },
-                                (_, i) => 1914 + i
-                            ).map((year) => (
-                                <option key={year} value={year}>
-                                    {year}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    <label className="block text-gray-700">To Year</label>
+                    <select
+                        value={endYear}
+                        onChange={(e) => setEndYear(parseInt(e.target.value))}
+                        className="w-full p-2 border rounded mb-4"
+                    >
+                        {yearOptions.map((year) => (
+                            <option key={year} value={year}>
+                                {year}
+                            </option>
+                        ))}
+                    </select>
 
                     <button
                         onClick={calculateInflation}
-                        className="col-span-2 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
+                        className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
                     >
                         Calculate
                     </button>
                 </div>
 
-                {calculatedAmount !== null && (
-                    <div className="mt-6 text-center">
-                        <h2 className="text-2xl">
-                            ${amount} in {fromYear} equals{" "}
-                            <span className="text-red-500">
-                                ${calculatedAmount.toFixed(2)}
-                            </span>{" "}
-                            in {toYear}.
-                        </h2>
+                {/* Results Section */}
+                <div className="bg-white p-6 rounded shadow-lg w-full md:w-1/3">
+                    <h2 className="text-xl font-semibold mb-4">Results</h2>
+                    <p className="text-lg mb-2">
+                        ${amount} in {startYear} equals{" "}
+                        <span className="font-bold text-red-500">
+                            $
+                            {adjustedAmount !== null
+                                ? adjustedAmount.toFixed(2)
+                                : "---"}
+                        </span>{" "}
+                        in {endYear}.
+                    </p>
+                </div>
+
+                {/* Chart Section */}
+                {chartData.length > 0 && (
+                    <div className="w-full max-w-3xl mx-auto mt-8">
+                        <Bar
+                            data={{
+                                labels: Array.from(
+                                    { length: endYear - startYear + 1 },
+                                    (_, i) => startYear + i
+                                ),
+                                datasets: [
+                                    {
+                                        label: "Inflation Adjusted Value",
+                                        data: chartData,
+                                        backgroundColor:
+                                            "rgba(54, 162, 235, 0.6)",
+                                    },
+                                ],
+                            }}
+                            options={{
+                                responsive: true,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                    },
+                                },
+                            }}
+                        />
                     </div>
                 )}
             </div>
-
-            {inflationData.length > 0 && (
-                <div className="mt-8 max-w-4xl mx-auto">
-                    <Bar
-                        data={{
-                            labels: inflationData.map((data) => data.year),
-                            datasets: [
-                                {
-                                    label: "Inflation Value",
-                                    data: inflationData.map(
-                                        (data) => data.value
-                                    ),
-                                    backgroundColor: "rgba(54, 162, 235, 0.6)",
-                                },
-                            ],
-                        }}
-                        options={{
-                            responsive: true,
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                },
-                            },
-                        }}
-                    />
-                </div>
-            )}
         </div>
     );
 };

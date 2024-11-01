@@ -50,18 +50,18 @@ const Navbar = () => {
                     </li>
                     <li>
                         <Link
-                            href="/loan-tables"
+                            href="/mortgage&loans"
                             className="hover:text-yellow-300 transition-colors duration-300"
                         >
-                            Loan Tables
+                            Mortgage and Loans
                         </Link>
                     </li>
                     <li>
                         <Link
-                            href="/how-much-home"
+                            href="/buy_home"
                             className="hover:text-yellow-300 transition-colors duration-300"
                         >
-                            How Much Home
+                            Can I buy home?
                         </Link>
                     </li>
                 </ul>
