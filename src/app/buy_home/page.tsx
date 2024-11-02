@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { ShinyButton } from "@/components/ShinyButton"; // Assuming ShinyButton is a reusable button component
+import ChartSection from "@/components/ChartSection"; // Assuming ChartSection is your reusable chart component
 
 const HomeAffordabilityCalculator = () => {
     const [annualIncome, setAnnualIncome] = useState<number>(75000);
@@ -8,25 +10,23 @@ const HomeAffordabilityCalculator = () => {
         useState<number>(28);
     const [mortgageInterestRate, setMortgageInterestRate] = useState<number>(6);
     const [loanLength, setLoanLength] = useState<number>(30);
-
     const [affordableMonthlyPayment, setAffordableMonthlyPayment] = useState<
         number | null
     >(null);
     const [mortgageAmount, setMortgageAmount] = useState<number | null>(null);
     const [totalHousePrice, setTotalHousePrice] = useState<number | null>(null);
+    const [chartData, setChartData] = useState<number[]>(
+        Array(loanLength).fill(0)
+    );
 
     const calculateAffordability = () => {
-        // Monthly income available for housing
         const monthlyIncome = annualIncome / 12;
         const monthlyHousingBudget =
             (monthlyIncome * percentIncomeHousing) / 100;
-
-        // Convert annual interest rate to monthly and number of payments to months
         const monthlyRate = mortgageInterestRate / 100 / 12;
         const numberOfPayments = loanLength * 12;
-
-        // Calculate the maximum affordable mortgage using the monthly payment formula
         let affordableMortgage = 0;
+
         if (monthlyRate === 0) {
             affordableMortgage = monthlyHousingBudget * numberOfPayments;
         } else {
@@ -36,19 +36,22 @@ const HomeAffordabilityCalculator = () => {
                 (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments));
         }
 
-        // Calculate total house price by adding the down payment to the affordable mortgage
         const totalAffordableHousePrice = affordableMortgage + downPayment;
-
-        // Set state for display
         setAffordableMonthlyPayment(monthlyHousingBudget);
         setMortgageAmount(affordableMortgage);
         setTotalHousePrice(totalAffordableHousePrice);
+
+        const yearlyData = Array.from(
+            { length: loanLength },
+            (_, i) => monthlyHousingBudget * 12 * (i + 1)
+        );
+        setChartData(yearlyData);
     };
 
     return (
         <div className="min-h-screen p-6">
             <h1 className="text-3xl font-bold text-center mb-6">
-                How Much Home Can I Afford Calculator
+                Home Affordability Calculator
             </h1>
 
             <div className="flex flex-wrap gap-8 justify-center max-w-5xl mx-auto">
@@ -124,12 +127,18 @@ const HomeAffordabilityCalculator = () => {
                         className="w-full p-2 border rounded mb-4"
                     />
 
-                    <button
-                        onClick={calculateAffordability}
-                        className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
-                    >
-                        Calculate
-                    </button>
+                    <div className="text-center mt-4">
+                        <ShinyButton
+                            href="#"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                calculateAffordability();
+                            }}
+                            className="bg-blue-500 text-white"
+                        >
+                            Calculate
+                        </ShinyButton>
+                    </div>
                 </div>
 
                 {/* Results Section */}
@@ -137,39 +146,41 @@ const HomeAffordabilityCalculator = () => {
                     <h2 className="text-xl font-semibold mb-4">Results</h2>
                     <p className="text-lg mb-2">
                         You can afford to pay{" "}
-                        <span className="font-bold text-blue-500">
+                        <span className="font-bold text-green-500">
                             $
                             {affordableMonthlyPayment !== null
                                 ? affordableMonthlyPayment.toFixed(2)
                                 : "---"}
                         </span>{" "}
-                        per month for a mortgage.
+                        per month.
                     </p>
                     <p className="text-lg mb-2">
-                        That would be a mortgage amount of{" "}
-                        <span className="font-bold text-blue-500">
+                        Mortgage amount:{" "}
+                        <span className="font-bold text-red-500">
                             $
                             {mortgageAmount !== null
                                 ? mortgageAmount.toFixed(2)
                                 : "---"}
                         </span>
-                        .
                     </p>
                     <p className="text-lg">
-                        With a down payment of{" "}
-                        <span className="font-bold text-blue-500">
-                            ${downPayment}
-                        </span>
-                        , the total house price would be{" "}
-                        <span className="font-bold text-blue-500">
+                        Total house price:{" "}
+                        <span className="font-bold text-green-500">
                             $
                             {totalHousePrice !== null
                                 ? totalHousePrice.toFixed(2)
                                 : "---"}
                         </span>
-                        .
                     </p>
                 </div>
+
+                {/* Chart Section - Visible at all times */}
+                <ChartSection
+                    startYear={1} // Start from the first year
+                    endYear={loanLength}
+                    chartData={chartData}
+                    label="Affordability Over Time"
+                />
             </div>
         </div>
     );

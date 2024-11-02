@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { ShinyButton } from "@/components/ShinyButton";
+import ChartSection from "@/components/ChartSection"; // Import the ChartSection component
 
 const MortgageCalculator = () => {
     const [purchasePrice, setPurchasePrice] = useState<number>(11000);
@@ -11,14 +13,17 @@ const MortgageCalculator = () => {
         null
     );
     const [totalPaid, setTotalPaid] = useState<number | null>(null);
+    const [balanceData, setBalanceData] = useState<number[]>([]); // Data for chart
 
     const calculateMortgage = () => {
         const principal = purchasePrice - downPayment;
         const monthlyRate = interestRate / 100 / 12;
         const numberOfPayments = loanLength * 12;
+        let balance = principal;
+        const balances = [];
 
         if (monthlyRate === 0) {
-            // If the interest rate is zero
+            // No interest case
             const monthly = principal / numberOfPayments;
             const total = monthly * numberOfPayments;
             const totalInterest = total - principal;
@@ -26,8 +31,12 @@ const MortgageCalculator = () => {
             setMonthlyPayment(monthly);
             setTotalPaid(total);
             setTotalInterestPaid(totalInterest);
+
+            for (let i = 0; i <= loanLength; i++) {
+                balances.push(balance - monthly * 12 * i);
+            }
         } else {
-            // Calculate mortgage with interest
+            // With interest case
             const monthly =
                 (principal *
                     (monthlyRate *
@@ -39,7 +48,17 @@ const MortgageCalculator = () => {
             setMonthlyPayment(monthly);
             setTotalPaid(total);
             setTotalInterestPaid(totalInterest);
+
+            // Calculate balance for each year
+            for (let i = 0; i <= loanLength; i++) {
+                balance = principal;
+                for (let j = 0; j < i * 12; j++) {
+                    balance = balance * (1 + monthlyRate) - monthly;
+                }
+                balances.push(Math.max(balance, 0));
+            }
         }
+        setBalanceData(balances);
     };
 
     return (
@@ -49,7 +68,6 @@ const MortgageCalculator = () => {
             </h1>
 
             <div className="flex flex-wrap gap-8 justify-center max-w-5xl mx-auto">
-                {/* Input Section */}
                 <div className="bg-white p-6 rounded shadow-lg w-full md:w-1/3">
                     <label className="block text-gray-700">
                         Purchase Price ($)
@@ -107,20 +125,25 @@ const MortgageCalculator = () => {
                         className="w-full p-2 border rounded mb-4"
                     />
 
-                    <button
-                        onClick={calculateMortgage}
-                        className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
-                    >
-                        Calculate
-                    </button>
+                    <div className="text-center mt-4">
+                        <ShinyButton
+                            href="#"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                calculateMortgage();
+                            }}
+                            className="bg-blue-500 text-white"
+                        >
+                            Calculate
+                        </ShinyButton>
+                    </div>
                 </div>
 
-                {/* Results Section */}
                 <div className="bg-white p-6 rounded shadow-lg w-full md:w-1/3">
                     <h2 className="text-xl font-semibold mb-4">Results</h2>
                     <div className="flex justify-between text-lg mb-2">
                         <span>Monthly Payment:</span>
-                        <span className="text-red-500">
+                        <span className="font-bold text-red-500">
                             $
                             {monthlyPayment !== null
                                 ? monthlyPayment.toFixed(2)
@@ -129,7 +152,7 @@ const MortgageCalculator = () => {
                     </div>
                     <div className="flex justify-between text-lg mb-2">
                         <span>Total Interest Paid:</span>
-                        <span>
+                        <span className="font-bold text-red-500">
                             $
                             {totalInterestPaid !== null
                                 ? totalInterestPaid.toFixed(2)
@@ -138,11 +161,21 @@ const MortgageCalculator = () => {
                     </div>
                     <div className="flex justify-between text-lg">
                         <span>Total Paid:</span>
-                        <span>
+                        <span className="font-bold text-red-500">
                             ${totalPaid !== null ? totalPaid.toFixed(2) : "---"}
                         </span>
                     </div>
                 </div>
+
+                {/* Chart Section */}
+                {balanceData.length > 0 && (
+                    <ChartSection
+                        startYear={1}
+                        endYear={loanLength}
+                        chartData={balanceData}
+                        label="Mortgage Balance Over Time"
+                    />
+                )}
             </div>
         </div>
     );

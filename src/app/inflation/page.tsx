@@ -16,7 +16,7 @@ import {
 // Registering required Chart.js components
 ChartJS.register(
     CategoryScale,
-    LinearScale, // Ensures LinearScale is properly registered
+    LinearScale,
     BarElement,
     Title,
     Tooltip,
@@ -28,7 +28,7 @@ const InflationCalculator = () => {
     const [startYear, setStartYear] = useState<number>(1914);
     const [endYear, setEndYear] = useState<number>(2024);
     const [adjustedAmount, setAdjustedAmount] = useState<number | null>(null);
-    const [chartData, setChartData] = useState<number[]>([]);
+    const [chartData, setChartData] = useState<number[]>([0]); // Initial placeholder data
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const calculateInflation = () => {
@@ -145,17 +145,15 @@ const InflationCalculator = () => {
                         </p>
                     )}
                 </div>
-
-                {/* Chart Section */}
-                {chartData.length > 0 && !errorMessage && (
-                    <ChartSection
-                        startYear={startYear}
-                        endYear={endYear}
-                        chartData={chartData}
-                        label="Inflation Adjusted Value"
-                    />
-                )}
             </div>
+
+            {/* Chart Section */}
+            <ChartSection
+                startYear={startYear}
+                endYear={endYear}
+                chartData={chartData}
+                label="Inflation Adjusted Value"
+            />
         </div>
     );
 };

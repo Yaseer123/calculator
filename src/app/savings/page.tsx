@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import { Bar } from "react-chartjs-2";
+import { ShinyButton } from "@/components/ShinyButton"; // Import ShinyButton
+import ChartSection from "@/components/ChartSection"; // Import ChartSection
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -34,34 +35,26 @@ const SavingsCalculator = () => {
     const [chartData, setChartData] = useState<number[]>([]);
 
     const calculateSavings = () => {
-        const r = investmentReturn / 100; // Convert percentage to decimal
+        const r = investmentReturn / 100;
         const P = initialDeposit;
         const n = years;
 
-        // Determine the number of compounding periods and adjusted contribution
         let adjustedContribution = contribution;
-        let compoundingPeriodsPerYear = 1; // default to yearly
+        let compoundingPeriodsPerYear = 1;
 
-        // Adjust values based on frequency
         switch (contributionFrequency) {
             case "monthly":
-                adjustedContribution = contribution;
                 compoundingPeriodsPerYear = 12;
                 break;
             case "weekly":
-                adjustedContribution = contribution;
                 compoundingPeriodsPerYear = 52;
                 break;
             case "daily":
-                adjustedContribution = contribution;
                 compoundingPeriodsPerYear = 365;
                 break;
         }
 
-        // Total number of compounding periods over the investment duration
         const totalCompoundingPeriods = compoundingPeriodsPerYear * n;
-
-        // Compound interest calculation with recurring deposits
         const futureValue =
             P *
                 Math.pow(
@@ -76,11 +69,9 @@ const SavingsCalculator = () => {
                     1) /
                     (r / compoundingPeriodsPerYear));
 
-        // Calculate the total invested based on frequency
         const totalInvestedAmount =
             P + adjustedContribution * compoundingPeriodsPerYear * n;
 
-        // Generate chart data for each year
         const yearlyData = [];
         for (let i = 0; i <= n; i++) {
             const fvYear =
@@ -99,7 +90,6 @@ const SavingsCalculator = () => {
             yearlyData.push(fvYear);
         }
 
-        // Set the final values
         setFutureValueCompound(futureValue);
         setTotalInvested(totalInvestedAmount);
         setChartData(yearlyData);
@@ -176,12 +166,18 @@ const SavingsCalculator = () => {
                         className="w-full p-2 border rounded mb-4"
                     />
 
-                    <button
-                        onClick={calculateSavings}
-                        className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
-                    >
-                        Calculate
-                    </button>
+                    <div className="text-center mt-4">
+                        <ShinyButton
+                            href="#"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                calculateSavings();
+                            }}
+                            className="bg-blue-500 text-white"
+                        >
+                            Calculate
+                        </ShinyButton>
+                    </div>
                 </div>
 
                 {/* Results Section */}
@@ -209,32 +205,12 @@ const SavingsCalculator = () => {
 
                 {/* Chart Section */}
                 {chartData.length > 0 && (
-                    <div className="w-full max-w-3xl mx-auto mt-8">
-                        <Bar
-                            data={{
-                                labels: Array.from(
-                                    { length: years + 1 },
-                                    (_, i) => i
-                                ),
-                                datasets: [
-                                    {
-                                        label: "Compound Interest Growth",
-                                        data: chartData,
-                                        backgroundColor:
-                                            "rgba(54, 162, 235, 0.6)",
-                                    },
-                                ],
-                            }}
-                            options={{
-                                responsive: true,
-                                scales: {
-                                    y: {
-                                        beginAtZero: true,
-                                    },
-                                },
-                            }}
-                        />
-                    </div>
+                    <ChartSection
+                        startYear={0}
+                        endYear={years}
+                        chartData={chartData}
+                        label="Compound Interest Growth"
+                    />
                 )}
             </div>
         </div>

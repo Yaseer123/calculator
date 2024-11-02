@@ -1,28 +1,9 @@
 "use client";
 import { useState } from "react";
-import { Bar } from "react-chartjs-2";
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend,
-} from "chart.js";
-
-// Register chart components
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend
-);
+import { ShinyButton } from "@/components/ShinyButton";
+import ChartSection from "@/components/ChartSection";
 
 const RetirementCalculator = () => {
-    // State variables for inputs
     const [currentAge, setCurrentAge] = useState<number>(30);
     const [retirementAge, setRetirementAge] = useState<number>(65);
     const [currentSavings, setCurrentSavings] = useState<number>(100000);
@@ -41,7 +22,6 @@ const RetirementCalculator = () => {
         const adjustedInvestmentReturn = 1 + investmentReturn / 100;
         const netGrowthRate = adjustedInvestmentReturn / adjustedInflationRate;
 
-        // Check if net growth rate is enough to sustain withdrawals indefinitely
         if (netGrowthRate * currentSavings >= annualWithdrawal) {
             setWillLastForever(true);
             setEndAge(null);
@@ -52,25 +32,21 @@ const RetirementCalculator = () => {
         }
 
         const savingsData = [{ age, savings }];
-
-        // Growth phase (until retirement)
         while (age < retirementAge) {
             savings = (savings + annualSavings) * adjustedInvestmentReturn;
             age++;
             savingsData.push({ age, savings });
         }
 
-        // Retirement phase (withdrawals start)
         while (savings > 0) {
-            // Apply withdrawal before inflation adjustment
             savings = (savings - annualWithdrawal) / adjustedInflationRate;
-            savings *= adjustedInvestmentReturn; // Apply annual return after adjusting for inflation
+            savings *= adjustedInvestmentReturn;
             age++;
             if (savings > 0) savingsData.push({ age, savings });
-            if (savings <= 0) break; // Stop if savings run out
+            if (savings <= 0) break;
         }
 
-        setEndAge(age); // Exact age when savings run out
+        setEndAge(age);
         setChartData(savingsData.map((data) => data.savings));
     };
 
@@ -182,12 +158,18 @@ const RetirementCalculator = () => {
                         className="w-full p-2 border rounded mb-4"
                     />
 
-                    <button
-                        onClick={calculateRetirementSavings}
-                        className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
-                    >
-                        Calculate
-                    </button>
+                    <div className="text-center mt-4">
+                        <ShinyButton
+                            href="#"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                calculateRetirementSavings();
+                            }}
+                            className="bg-blue-500 text-white"
+                        >
+                            Calculate
+                        </ShinyButton>
+                    </div>
                 </div>
 
                 {/* Results Section */}
@@ -211,32 +193,12 @@ const RetirementCalculator = () => {
 
                 {/* Chart Section */}
                 {chartData.length > 0 && (
-                    <div className="w-full max-w-3xl mx-auto mt-8">
-                        <Bar
-                            data={{
-                                labels: Array.from(
-                                    { length: chartData.length },
-                                    (_, i) => i + currentAge
-                                ),
-                                datasets: [
-                                    {
-                                        label: "Savings Over Time",
-                                        data: chartData,
-                                        backgroundColor:
-                                            "rgba(75, 192, 192, 0.6)",
-                                    },
-                                ],
-                            }}
-                            options={{
-                                responsive: true,
-                                scales: {
-                                    y: {
-                                        beginAtZero: true,
-                                    },
-                                },
-                            }}
-                        />
-                    </div>
+                    <ChartSection
+                        startYear={currentAge}
+                        endYear={endAge || retirementAge}
+                        chartData={chartData}
+                        label="Savings Over Time"
+                    />
                 )}
             </div>
         </div>

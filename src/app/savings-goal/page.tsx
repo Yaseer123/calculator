@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Bar } from "react-chartjs-2";
+import { ShinyButton } from "@/components/ShinyButton"; // Import ShinyButton
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -21,7 +22,7 @@ ChartJS.register(
 );
 
 const SavingsGoalCalculator = () => {
-    const [goal, setGoal] = useState<number>(3000000); // Adjusted goal as per your example
+    const [goal, setGoal] = useState<number>(3000000);
     const [currentSavings, setCurrentSavings] = useState<number>(120000);
     const [monthlySavings, setMonthlySavings] = useState<number>(720);
     const [investmentReturn, setInvestmentReturn] = useState<number>(6);
@@ -31,27 +32,23 @@ const SavingsGoalCalculator = () => {
 
     const calculateSavingsGoal = () => {
         let totalSavings = currentSavings;
-        const monthlyRate = investmentReturn / 100 / 12; // Monthly compounding rate
+        const monthlyRate = investmentReturn / 100 / 12;
         let months = 0;
         const growthData = [totalSavings];
 
-        // Calculate month-by-month until reaching the goal
         while (totalSavings < goal) {
-            totalSavings *= 1 + monthlyRate; // Apply monthly interest
-            totalSavings += monthlySavings; // Add monthly savings at the end of each month
+            totalSavings *= 1 + monthlyRate;
+            totalSavings += monthlySavings;
             months += 1;
 
-            // Store data at yearly intervals for chart display
             if (months % 12 === 0) {
                 growthData.push(totalSavings);
             }
         }
 
-        // Calculate years and months to reach the goal
         const years = Math.floor(months / 12);
         const remainingMonths = months % 12;
 
-        // Set the calculated values
         setYearsToGoal(years);
         setMonthsToGoal(remainingMonths);
         setChartData(growthData);
@@ -112,12 +109,18 @@ const SavingsGoalCalculator = () => {
                         className="w-full p-2 border rounded mb-4"
                     />
 
-                    <button
-                        onClick={calculateSavingsGoal}
-                        className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
-                    >
-                        Calculate
-                    </button>
+                    <div className="text-center mt-4">
+                        <ShinyButton
+                            href="#"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                calculateSavingsGoal();
+                            }}
+                            className="bg-blue-500 text-white"
+                        >
+                            Calculate
+                        </ShinyButton>
+                    </div>
                 </div>
 
                 {/* Results Section */}
@@ -145,7 +148,7 @@ const SavingsGoalCalculator = () => {
                                         label: "Savings Growth",
                                         data: chartData,
                                         backgroundColor:
-                                            "rgba(54, 162, 235, 0.6)",
+                                            "rgba(255, 99, 71, 0.8)", // Updated color
                                     },
                                 ],
                             }}
