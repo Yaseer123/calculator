@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
-import { Bar } from "react-chartjs-2";
-import inflationData from "@/data/inflationData"; // Adjust the path as needed
+import inflationData from "@/data/inflationData";
+import { ShinyButton } from "@/components/ShinyButton";
+import ChartSection from "@/components/ChartSection";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -12,9 +13,10 @@ import {
     Legend,
 } from "chart.js";
 
+// Registering required Chart.js components
 ChartJS.register(
     CategoryScale,
-    LinearScale,
+    LinearScale, // Ensures LinearScale is properly registered
     BarElement,
     Title,
     Tooltip,
@@ -27,6 +29,7 @@ const InflationCalculator = () => {
     const [endYear, setEndYear] = useState<number>(2024);
     const [adjustedAmount, setAdjustedAmount] = useState<number | null>(null);
     const [chartData, setChartData] = useState<number[]>([]);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const calculateInflation = () => {
         if (startYear in inflationData && endYear in inflationData) {
@@ -45,8 +48,9 @@ const InflationCalculator = () => {
                 (year) => (amount / startValue) * inflationData[year]
             );
             setChartData(values);
+            setErrorMessage(null);
         } else {
-            alert(
+            setErrorMessage(
                 "Please select valid years within the range of available data."
             );
         }
@@ -99,63 +103,57 @@ const InflationCalculator = () => {
                         className="w-full p-2 border rounded mb-4"
                     >
                         {yearOptions.map((year) => (
-                            <option key={year} value={year}>
+                            <option
+                                key={year}
+                                value={year}
+                                disabled={year < startYear}
+                            >
                                 {year}
                             </option>
                         ))}
                     </select>
 
-                    <button
-                        onClick={calculateInflation}
-                        className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
-                    >
-                        Calculate
-                    </button>
+                    <div className="text-center mt-4">
+                        <ShinyButton
+                            href="#"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                calculateInflation();
+                            }}
+                            className="bg-blue-500 text-white"
+                        >
+                            Calculate
+                        </ShinyButton>
+                    </div>
                 </div>
 
                 {/* Results Section */}
                 <div className="bg-white p-6 rounded shadow-lg w-full md:w-1/3">
                     <h2 className="text-xl font-semibold mb-4">Results</h2>
-                    <p className="text-lg mb-2">
-                        ${amount} in {startYear} equals{" "}
-                        <span className="font-bold text-red-500">
-                            $
-                            {adjustedAmount !== null
-                                ? adjustedAmount.toFixed(2)
-                                : "---"}
-                        </span>{" "}
-                        in {endYear}.
-                    </p>
+                    {errorMessage ? (
+                        <p className="text-red-500">{errorMessage}</p>
+                    ) : (
+                        <p className="text-lg mb-2">
+                            ${amount} in {startYear} equals{" "}
+                            <span className="font-bold text-red-500">
+                                $
+                                {adjustedAmount !== null
+                                    ? adjustedAmount.toFixed(2)
+                                    : "---"}
+                            </span>{" "}
+                            in {endYear}.
+                        </p>
+                    )}
                 </div>
 
                 {/* Chart Section */}
-                {chartData.length > 0 && (
-                    <div className="w-full max-w-3xl mx-auto mt-8">
-                        <Bar
-                            data={{
-                                labels: Array.from(
-                                    { length: endYear - startYear + 1 },
-                                    (_, i) => startYear + i
-                                ),
-                                datasets: [
-                                    {
-                                        label: "Inflation Adjusted Value",
-                                        data: chartData,
-                                        backgroundColor:
-                                            "rgba(54, 162, 235, 0.6)",
-                                    },
-                                ],
-                            }}
-                            options={{
-                                responsive: true,
-                                scales: {
-                                    y: {
-                                        beginAtZero: true,
-                                    },
-                                },
-                            }}
-                        />
-                    </div>
+                {chartData.length > 0 && !errorMessage && (
+                    <ChartSection
+                        startYear={startYear}
+                        endYear={endYear}
+                        chartData={chartData}
+                        label="Inflation Adjusted Value"
+                    />
                 )}
             </div>
         </div>
