@@ -22,7 +22,7 @@ const Navbar = () => {
                 <ul className="flex-grow flex justify-center space-x-8 text-white font-semibold">
                     <li>
                         <Link
-                            href="/inflation"
+                            href="/inflation-calculator"
                             className="hover:text-yellow-300 flex items-center space-x-2 transition-colors duration-300"
                         >
                             <MdOutlineAttachMoney className="h-5 w-5" />
@@ -31,7 +31,7 @@ const Navbar = () => {
                     </li>
                     <li>
                         <Link
-                            href="/savings"
+                            href="/savings-calculator"
                             className="hover:text-yellow-300 flex items-center space-x-2 transition-colors duration-300"
                         >
                             <MdSavings className="h-5 w-5" />
@@ -40,7 +40,7 @@ const Navbar = () => {
                     </li>
                     <li>
                         <Link
-                            href="/retirement"
+                            href="/retirement-calculator"
                             className="hover:text-yellow-300 flex items-center space-x-2 transition-colors duration-300"
                         >
                             <GiTakeMyMoney className="h-5 w-5" />
@@ -49,7 +49,7 @@ const Navbar = () => {
                     </li>
                     <li>
                         <Link
-                            href="/savings-goal"
+                            href="/savings-goal-calculator"
                             className="hover:text-yellow-300 flex items-center space-x-2 transition-colors duration-300"
                         >
                             <LiaMoneyCheckSolid className="h-5 w-5" />
@@ -58,7 +58,7 @@ const Navbar = () => {
                     </li>
                     <li>
                         <Link
-                            href="/mortgage&loans"
+                            href="/mortgage-loan-calculator"
                             className="hover:text-yellow-300 flex items-center space-x-2 transition-colors duration-300"
                         >
                             <MdOutlineAttachMoney className="h-5 w-5" />
