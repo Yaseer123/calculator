@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
-import { ShinyButton } from "@/components/ShinyButton"; // Import ShinyButton
-import ChartSection from "@/components/ChartSection"; // Import ChartSection
+import { ShinyButton } from "@/components/ShinyButton";
+import ChartSection from "@/components/ChartSection";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -35,11 +35,12 @@ const SavingsCalculator = () => {
     const [chartData, setChartData] = useState<number[]>([]);
 
     const calculateSavings = () => {
-        const r = investmentReturn / 100;
+        const r = investmentReturn / 100; // Convert percentage to decimal
         const P = initialDeposit;
         const n = years;
 
-        let adjustedContribution = contribution;
+        // Determine the number of compounding periods and adjust contribution based on frequency
+        const adjustedContribution = contribution;
         let compoundingPeriodsPerYear = 1;
 
         switch (contributionFrequency) {
@@ -55,6 +56,8 @@ const SavingsCalculator = () => {
         }
 
         const totalCompoundingPeriods = compoundingPeriodsPerYear * n;
+
+        // Calculate future value and total invested based on compounding
         const futureValue =
             P *
                 Math.pow(
@@ -72,6 +75,7 @@ const SavingsCalculator = () => {
         const totalInvestedAmount =
             P + adjustedContribution * compoundingPeriodsPerYear * n;
 
+        // Generate chart data for each year
         const yearlyData = [];
         for (let i = 0; i <= n; i++) {
             const fvYear =
