@@ -111,7 +111,8 @@ const SalaryCalculator = () => {
                         </p>
                     ) : (
                         <p className="text-gray-500">
-                            Enter values and click "Calculate" to see results.
+                            Enter values and click &quot;Calculate&quot; to see
+                            results.
                         </p>
                     )}
                     {salaryType === "hourly" && (

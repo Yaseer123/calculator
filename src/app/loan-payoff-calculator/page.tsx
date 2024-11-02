@@ -5,9 +5,9 @@ import { useState } from "react";
 import { ShinyButton } from "@/components/ShinyButton";
 
 const DebtPayoffCalculator = () => {
-    const [debtAmount, setDebtAmount] = useState<number>(27000); // Default value for debt amount
-    const [interestRate, setInterestRate] = useState<number>(7.99); // Default interest rate in %
-    const [monthlyPayment, setMonthlyPayment] = useState<number>(400); // Default monthly payment
+    const [debtAmount, setDebtAmount] = useState<number>(27000);
+    const [interestRate, setInterestRate] = useState<number>(7.99);
+    const [monthlyPayment, setMonthlyPayment] = useState<number>(400);
     const [payoffMonths, setPayoffMonths] = useState<number | null>(null);
     const [totalInterest, setTotalInterest] = useState<number | null>(null);
 
@@ -123,7 +123,8 @@ const DebtPayoffCalculator = () => {
                         </>
                     ) : (
                         <p className="text-lg text-gray-500">
-                            Enter values and click "Calculate" to see results.
+                            Enter values and click &quot;Calculate&quot; to see
+                            results.
                         </p>
                     )}
                 </div>

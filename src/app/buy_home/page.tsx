@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { ShinyButton } from "@/components/ShinyButton"; // Assuming ShinyButton is a reusable button component
-import ChartSection from "@/components/ChartSection"; // Assuming ChartSection is your reusable chart component
 
 const HomeAffordabilityCalculator = () => {
     const [annualIncome, setAnnualIncome] = useState<number>(75000);
@@ -15,9 +14,6 @@ const HomeAffordabilityCalculator = () => {
     >(null);
     const [mortgageAmount, setMortgageAmount] = useState<number | null>(null);
     const [totalHousePrice, setTotalHousePrice] = useState<number | null>(null);
-    const [chartData, setChartData] = useState<number[]>(
-        Array(loanLength).fill(0)
-    );
 
     const calculateAffordability = () => {
         const monthlyIncome = annualIncome / 12;
@@ -40,12 +36,6 @@ const HomeAffordabilityCalculator = () => {
         setAffordableMonthlyPayment(monthlyHousingBudget);
         setMortgageAmount(affordableMortgage);
         setTotalHousePrice(totalAffordableHousePrice);
-
-        const yearlyData = Array.from(
-            { length: loanLength },
-            (_, i) => monthlyHousingBudget * 12 * (i + 1)
-        );
-        setChartData(yearlyData);
     };
 
     return (

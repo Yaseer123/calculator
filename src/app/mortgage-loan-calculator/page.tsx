@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { ShinyButton } from "@/components/ShinyButton";
-import ChartSection from "@/components/ChartSection"; // Import the ChartSection component
 
 const MortgageCalculator = () => {
     const [purchasePrice, setPurchasePrice] = useState<number>(11000);
@@ -13,14 +12,11 @@ const MortgageCalculator = () => {
         null
     );
     const [totalPaid, setTotalPaid] = useState<number | null>(null);
-    const [balanceData, setBalanceData] = useState<number[]>([]); // Data for chart
 
     const calculateMortgage = () => {
         const principal = purchasePrice - downPayment;
         const monthlyRate = interestRate / 100 / 12;
         const numberOfPayments = loanLength * 12;
-        let balance = principal;
-        const balances = [];
 
         if (monthlyRate === 0) {
             // No interest case
@@ -31,10 +27,6 @@ const MortgageCalculator = () => {
             setMonthlyPayment(monthly);
             setTotalPaid(total);
             setTotalInterestPaid(totalInterest);
-
-            for (let i = 0; i <= loanLength; i++) {
-                balances.push(balance - monthly * 12 * i);
-            }
         } else {
             // With interest case
             const monthly =
@@ -48,17 +40,7 @@ const MortgageCalculator = () => {
             setMonthlyPayment(monthly);
             setTotalPaid(total);
             setTotalInterestPaid(totalInterest);
-
-            // Calculate balance for each year
-            for (let i = 0; i <= loanLength; i++) {
-                balance = principal;
-                for (let j = 0; j < i * 12; j++) {
-                    balance = balance * (1 + monthlyRate) - monthly;
-                }
-                balances.push(Math.max(balance, 0));
-            }
         }
-        setBalanceData(balances);
     };
 
     return (
