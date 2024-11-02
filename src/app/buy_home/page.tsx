@@ -173,14 +173,6 @@ const HomeAffordabilityCalculator = () => {
                         </span>
                     </p>
                 </div>
-
-                {/* Chart Section - Visible at all times */}
-                <ChartSection
-                    startYear={1} // Start from the first year
-                    endYear={loanLength}
-                    chartData={chartData}
-                    label="Affordability Over Time"
-                />
             </div>
         </div>
     );

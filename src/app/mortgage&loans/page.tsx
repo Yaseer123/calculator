@@ -166,16 +166,6 @@ const MortgageCalculator = () => {
                         </span>
                     </div>
                 </div>
-
-                {/* Chart Section */}
-                {balanceData.length > 0 && (
-                    <ChartSection
-                        startYear={1}
-                        endYear={loanLength}
-                        chartData={balanceData}
-                        label="Mortgage Balance Over Time"
-                    />
-                )}
             </div>
         </div>
     );
