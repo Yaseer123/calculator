@@ -95,7 +95,7 @@ const HomePage = () => {
                     <ul className="space-y-2">
                         <li>
                             <Link
-                                href="/loan-based-on-payment"
+                                href="/loan-value-calculator"
                                 className="text-black hover:text-yellow-500"
                             >
                                 Loan Amount based on Payment
@@ -130,15 +130,15 @@ const HomePage = () => {
                                 href="/compare-loan-calculator"
                                 className="text-black hover:text-yellow-500"
                             >
-                                Compare Loan calculator
+                                Compare Loan Calculator
                             </Link>
                         </li>
                         <li>
                             <Link
-                                href="/interest-only-loan-calculator"
+                                href="/student-loan-payoff-calculator"
                                 className="text-black hover:text-yellow-500"
                             >
-                                Interest Only Loan Calculator
+                                Student Loan Payoff Calculator
                             </Link>
                         </li>
                         <li>
