@@ -2,6 +2,13 @@
 import { useState } from "react";
 import { ShinyButton } from "@/components/ShinyButton";
 
+interface AmortizationPayment {
+    paymentNumber: number;
+    principalPayment: number;
+    interestPayment: number;
+    balance: number;
+}
+
 const AmortizationCalculator = () => {
     const [homePrice, setHomePrice] = useState<number>(350000);
     const [downPayment, setDownPayment] = useState<number>(70000);
@@ -15,24 +22,23 @@ const AmortizationCalculator = () => {
     const [numberOfPayments, setNumberOfPayments] = useState<number | null>(
         null
     );
-    const [amortizationSchedule, setAmortizationSchedule] = useState<any[]>([]);
+    const [amortizationSchedule, setAmortizationSchedule] = useState<
+        AmortizationPayment[]
+    >([]);
 
     const calculateAmortization = () => {
         const principal = homePrice - downPayment;
         const monthlyRate = interestRate / 100 / 12;
         const numberOfPayments = loanLength * 12;
 
-        // Calculate monthly payment
         const monthlyPayment =
             (principal * monthlyRate) /
             (1 - Math.pow(1 + monthlyRate, -numberOfPayments));
-
         setMonthlyPayment(monthlyPayment);
 
-        // Amortization schedule calculation
         let balance = principal;
         let totalInterestPaid = 0;
-        const schedule = [];
+        const schedule: AmortizationPayment[] = [];
 
         for (let i = 1; i <= numberOfPayments; i++) {
             const interestPayment = balance * monthlyRate;
@@ -46,9 +52,9 @@ const AmortizationCalculator = () => {
             ) {
                 schedule.push({
                     paymentNumber: i,
-                    interestPayment: interestPayment,
-                    principalPayment: principalPayment,
-                    balance: Math.max(0, balance), // Ensure balance doesn't go below zero
+                    interestPayment,
+                    principalPayment,
+                    balance: Math.max(0, balance),
                 });
             }
         }
@@ -179,7 +185,8 @@ const AmortizationCalculator = () => {
                         </>
                     ) : (
                         <p className="text-lg text-gray-500">
-                            Enter values and click "Calculate" to see results.
+                            Enter values and click &quot;Calculate&quot; to see
+                            results.
                         </p>
                     )}
                 </div>
