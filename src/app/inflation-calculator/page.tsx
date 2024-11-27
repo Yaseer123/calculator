@@ -1,161 +1,64 @@
-"use client";
-import { useState } from "react";
-import inflationData from "@/data/inflationData";
-import { ShinyButton } from "@/components/ShinyButton";
-import ChartSection from "@/components/ChartSection";
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend,
-} from "chart.js";
+import InflationCalculator from "@/components/calculators/Inflation";
+import React from "react";
 
-// Registering required Chart.js components
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend
-);
+export const metadata = {
+    title: "Inflation Calculator | U.S. Dollar Value Over Time",
+    description:
+        "Use our U.S.-focused Inflation Calculator to compare the value of the dollar over time. Understand how inflation impacts purchasing power with accurate historical data.",
+    keywords: [
+        "U.S. inflation calculator",
+        "dollar value over time",
+        "U.S. purchasing power",
+        "inflation trends USA",
+        "calculate inflation USA",
+    ],
+    openGraph: {
+        title: "Inflation Calculator | U.S. Dollar Value Over Time",
+        description:
+            "Calculate the historical value of the U.S. dollar and see how inflation changes its purchasing power over time.",
+        url: "https://yourwebsite.com/inflation-calculator",
+        images: [
+            {
+                url: "https://yourwebsite.com/images/inflation-calculator.png",
+                width: 1200,
+                height: 630,
+                alt: "Inflation Calculator for U.S. Dollar Value",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Inflation Calculator | U.S. Dollar Value Over Time",
+        description:
+            "Quickly calculate the effects of inflation on the U.S. dollar's value over time with our accurate Inflation Calculator.",
+        images: ["https://yourwebsite.com/images/inflation-calculator.png"],
+    },
+};
 
-const InflationCalculator = () => {
-    const [amount, setAmount] = useState<number>(1.0);
-    const [startYear, setStartYear] = useState<number>(1914);
-    const [endYear, setEndYear] = useState<number>(2024);
-    const [adjustedAmount, setAdjustedAmount] = useState<number | null>(null);
-    const [chartData, setChartData] = useState<number[]>([0]); // Initial placeholder data
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-    const calculateInflation = () => {
-        if (startYear in inflationData && endYear in inflationData) {
-            const startValue = inflationData[startYear];
-            const endValue = inflationData[endYear];
-            const adjusted = (amount / startValue) * endValue;
-
-            setAdjustedAmount(adjusted);
-
-            // Generate chart data for yearly inflation change
-            const years = Array.from(
-                { length: endYear - startYear + 1 },
-                (_, i) => startYear + i
-            );
-            const values = years.map(
-                (year) => (amount / startValue) * inflationData[year]
-            );
-            setChartData(values);
-            setErrorMessage(null);
-        } else {
-            setErrorMessage(
-                "Please select valid years within the range of available data."
-            );
-        }
-    };
-
-    // Generate options for the dropdowns
-    const yearOptions = Array.from(
-        { length: 2024 - 1914 + 1 },
-        (_, i) => 1914 + i
-    );
-
+const InflationCalculatorPage = () => {
     return (
         <div className="min-h-screen p-6">
-            <h1 className="text-3xl font-bold text-center mb-6">
+            <h1 className="text-3xl font-bold text-center mb-4">
                 Inflation Calculator
             </h1>
 
-            <div className="flex flex-wrap gap-8 justify-center max-w-5xl mx-auto">
-                {/* Input Section */}
-                <div className="bg-white p-6 rounded shadow-lg w-full md:w-1/3">
-                    <label className="block text-gray-700">Amount ($)</label>
-                    <input
-                        type="number"
-                        value={amount}
-                        onChange={(e) =>
-                            setAmount(
-                                Math.max(0, parseFloat(e.target.value) || 0)
-                            )
-                        }
-                        className="w-full p-2 border rounded mb-4"
-                    />
-
-                    <label className="block text-gray-700">From Year</label>
-                    <select
-                        value={startYear}
-                        onChange={(e) => setStartYear(parseInt(e.target.value))}
-                        className="w-full p-2 border rounded mb-4"
-                    >
-                        {yearOptions.map((year) => (
-                            <option key={year} value={year}>
-                                {year}
-                            </option>
-                        ))}
-                    </select>
-
-                    <label className="block text-gray-700">To Year</label>
-                    <select
-                        value={endYear}
-                        onChange={(e) => setEndYear(parseInt(e.target.value))}
-                        className="w-full p-2 border rounded mb-4"
-                    >
-                        {yearOptions.map((year) => (
-                            <option
-                                key={year}
-                                value={year}
-                                disabled={year < startYear}
-                            >
-                                {year}
-                            </option>
-                        ))}
-                    </select>
-
-                    <div className="text-center mt-4">
-                        <ShinyButton
-                            href="#"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                calculateInflation();
-                            }}
-                            className="bg-blue-500 text-white"
-                        >
-                            Calculate
-                        </ShinyButton>
-                    </div>
-                </div>
-
-                {/* Results Section */}
-                <div className="bg-white p-6 rounded shadow-lg w-full md:w-1/3">
-                    <h2 className="text-xl font-semibold mb-4">Results</h2>
-                    {errorMessage ? (
-                        <p className="text-red-500">{errorMessage}</p>
-                    ) : (
-                        <p className="text-lg mb-2">
-                            ${amount} in {startYear} equals{" "}
-                            <span className="font-bold text-red-500">
-                                $
-                                {adjustedAmount !== null
-                                    ? adjustedAmount.toFixed(2)
-                                    : "---"}
-                            </span>{" "}
-                            in {endYear}.
-                        </p>
-                    )}
-                </div>
+            {/* Server-Side Description */}
+            <div className="text-center mb-8 max-w-3xl mx-auto">
+                <p className="text-gray-700">
+                    The <strong>U.S. Inflation Calculator</strong> helps you
+                    understand how inflation affects the value of money over
+                    time. Compare the purchasing power of the dollar between
+                    different years and visualize historical U.S. inflation
+                    trends. This tool uses accurate data to assist financial
+                    planners, researchers, and individuals in making informed
+                    decisions about the impact of inflation on their finances.
+                </p>
             </div>
 
-            {/* Chart Section */}
-            <ChartSection
-                startYear={startYear}
-                endYear={endYear}
-                chartData={chartData}
-                label="Inflation Adjusted Value"
-            />
+            {/* Client-Side Component */}
+            <InflationCalculator />
         </div>
     );
 };
 
-export default InflationCalculator;
+export default InflationCalculatorPage;

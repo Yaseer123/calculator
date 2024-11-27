@@ -1,132 +1,58 @@
-"use client";
-import { useState } from "react";
-import { ShinyButton } from "@/components/ShinyButton";
+import StudentLoanPaymentCalculator from "@/components/calculators/StudentLoanCalculator";
 
-// Function to calculate monthly payment, total interest, and total payment
-const calculateStudentLoanDetails = (
-    loanAmount: number,
-    annualRate: number,
-    years: number
-) => {
-    const monthlyRate = annualRate / 100 / 12;
-    const numberOfPayments = years * 12;
-    const monthlyPayment =
-        (loanAmount * monthlyRate) /
-        (1 - Math.pow(1 + monthlyRate, -numberOfPayments));
-    const totalPaid = monthlyPayment * numberOfPayments;
-    const totalInterestPaid = totalPaid - loanAmount;
-    return { monthlyPayment, totalInterestPaid, totalPaid };
+export const metadata = {
+    title: "Student Loan Payment Calculator | Plan Your Finances",
+    description:
+        "Use our Student Loan Payment Calculator to plan your monthly payments and understand your total costs. Designed for U.S. students and graduates, make informed decisions about your loan repayment schedule.",
+    keywords: [
+        "student loan payment calculator",
+        "student loan repayment USA",
+        "loan payment calculator",
+        "student debt management",
+        "loan interest calculator",
+    ],
+    openGraph: {
+        title: "Student Loan Payment Calculator | Plan Your Finances",
+        description:
+            "Calculate your student loan monthly payments, total interest paid, and repayment timeline. A must-have tool for U.S. students managing their finances.",
+        url: "https://yourwebsite.com/student-loan-payment",
+        images: [
+            {
+                url: "https://yourwebsite.com/images/student-loan-payment.png",
+                width: 1200,
+                height: 630,
+                alt: "Student Loan Payment Calculator",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Student Loan Payment Calculator | Plan Your Finances",
+        description:
+            "Manage your student loan repayment effectively with our comprehensive payment calculator tailored for U.S. users.",
+        images: ["https://yourwebsite.com/images/student-loan-payment.png"],
+    },
 };
 
-const StudentLoanPaymentCalculator = () => {
-    const [loanAmount, setLoanAmount] = useState<number>(42000);
-    const [interestRate, setInterestRate] = useState<number>(5.75);
-    const [loanYears, setLoanYears] = useState<number>(10);
-
-    const [monthlyPayment, setMonthlyPayment] = useState<number | null>(null);
-    const [totalInterestPaid, setTotalInterestPaid] = useState<number | null>(
-        null
-    );
-    const [totalPaid, setTotalPaid] = useState<number | null>(null);
-
-    const handleCalculate = () => {
-        const { monthlyPayment, totalInterestPaid, totalPaid } =
-            calculateStudentLoanDetails(loanAmount, interestRate, loanYears);
-        setMonthlyPayment(monthlyPayment);
-        setTotalInterestPaid(totalInterestPaid);
-        setTotalPaid(totalPaid);
-    };
-
-    return (
-        <div className="min-h-screen p-6">
-            <h1 className="text-3xl font-bold text-center mb-6">
-                Student Loan Payment Calculator
-            </h1>
-
-            <div className="flex flex-wrap gap-8 justify-center max-w-5xl mx-auto">
-                {/* Input Section */}
-                <div className="bg-white p-6 rounded shadow-lg w-full md:w-1/3">
-                    <label className="block text-gray-700">
-                        Loan Amount ($)
-                    </label>
-                    <input
-                        type="number"
-                        value={loanAmount}
-                        onChange={(e) =>
-                            setLoanAmount(parseFloat(e.target.value) || 0)
-                        }
-                        className="w-full p-2 border rounded mb-4"
-                    />
-
-                    <label className="block text-gray-700">
-                        Interest Rate (%)
-                    </label>
-                    <input
-                        type="number"
-                        value={interestRate}
-                        onChange={(e) =>
-                            setInterestRate(parseFloat(e.target.value) || 0)
-                        }
-                        className="w-full p-2 border rounded mb-4"
-                    />
-
-                    <label className="block text-gray-700">
-                        Loan Term (years)
-                    </label>
-                    <input
-                        type="number"
-                        value={loanYears}
-                        onChange={(e) =>
-                            setLoanYears(parseInt(e.target.value) || 0)
-                        }
-                        className="w-full p-2 border rounded mb-4"
-                    />
-
-                    <div className="text-center mt-4">
-                        <ShinyButton
-                            href="#"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                handleCalculate();
-                            }}
-                            className="bg-blue-500 text-white w-32"
-                        >
-                            Calculate
-                        </ShinyButton>
-                    </div>
-                </div>
-
-                {/* Results Section */}
-                <div className="bg-white p-6 rounded shadow-lg w-full md:w-1/3">
-                    <h2 className="text-xl font-semibold mb-4">Results</h2>
-                    <p className="text-lg mb-2">
-                        Monthly Payment:{" "}
-                        <span className="font-bold text-green-600">
-                            $
-                            {monthlyPayment !== null
-                                ? monthlyPayment.toFixed(2)
-                                : "---"}
-                        </span>
-                    </p>
-                    <p className="text-lg mb-2">
-                        Total Interest Paid:{" "}
-                        <span className="font-bold text-red-600">
-                            $
-                            {totalInterestPaid !== null
-                                ? totalInterestPaid.toFixed(2)
-                                : "---"}
-                        </span>
-                    </p>
-                    <p className="text-lg">
-                        Total Paid:{" "}
-                        <span className="font-bold text-blue-600">
-                            ${totalPaid !== null ? totalPaid.toFixed(2) : "---"}
-                        </span>
-                    </p>
-                </div>
-            </div>
+const StudentLoanPaymentCalculatorPage = () => (
+    <div className="min-h-screen p-6">
+        <h1 className="text-3xl font-bold text-center mb-4">
+            Student Loan Payment Calculator
+        </h1>
+        {/* Server-Side Description */}
+        <div className="text-center mb-8 max-w-3xl mx-auto">
+            <p className="text-gray-700">
+                Take control of your finances with our{" "}
+                <strong>Student Loan Payment Calculator</strong>. Calculate your
+                monthly payments, total interest, and repayment schedule to plan
+                your financial future. Tailored for U.S. students and graduates,
+                this tool is perfect for managing your student debt and
+                understanding the true cost of borrowing.
+            </p>
         </div>
-    );
-};
+        {/* Client-Side Component */}
+        <StudentLoanPaymentCalculator />
+    </div>
+);
 
-export default StudentLoanPaymentCalculator;
+export default StudentLoanPaymentCalculatorPage;

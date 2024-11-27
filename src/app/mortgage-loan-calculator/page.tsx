@@ -1,156 +1,61 @@
-"use client";
-import { useState } from "react";
-import { ShinyButton } from "@/components/ShinyButton";
+import MortgageCalculator from "@/components/calculators/MortgageLoan";
 
-const MortgageCalculator = () => {
-    const [purchasePrice, setPurchasePrice] = useState<number>(11000);
-    const [downPayment, setDownPayment] = useState<number>(2200);
-    const [interestRate, setInterestRate] = useState<number>(6.25);
-    const [loanLength, setLoanLength] = useState<number>(30);
-    const [monthlyPayment, setMonthlyPayment] = useState<number | null>(null);
-    const [totalInterestPaid, setTotalInterestPaid] = useState<number | null>(
-        null
-    );
-    const [totalPaid, setTotalPaid] = useState<number | null>(null);
+export const metadata = {
+    title: "Mortgage Calculator | Estimate Monthly Payments in the U.S.",
+    description:
+        "Use our U.S.-focused Mortgage Calculator to estimate your monthly mortgage payments, total interest, and repayment costs. Plan your home buying journey effectively.",
+    keywords: [
+        "mortgage calculator USA",
+        "home loan payment calculator",
+        "monthly mortgage estimator",
+        "mortgage interest calculator",
+        "loan repayment tool USA",
+    ],
+    openGraph: {
+        title: "Mortgage Calculator | Estimate Monthly Payments in the U.S.",
+        description:
+            "Easily calculate your monthly mortgage payments, total interest, and total repayment costs with our U.S.-focused Mortgage Calculator.",
+        url: "https://yourwebsite.com/mortgage-calculator",
+        images: [
+            {
+                url: "https://yourwebsite.com/images/mortgage-calculator.png",
+                width: 1200,
+                height: 630,
+                alt: "Mortgage Calculator USA",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Mortgage Calculator | Estimate Monthly Payments in the U.S.",
+        description:
+            "Plan your home buying journey with our U.S.-focused Mortgage Calculator. Estimate monthly payments, interest costs, and total repayments.",
+        images: ["https://yourwebsite.com/images/mortgage-calculator.png"],
+    },
+};
 
-    const calculateMortgage = () => {
-        const principal = purchasePrice - downPayment;
-        const monthlyRate = interestRate / 100 / 12;
-        const numberOfPayments = loanLength * 12;
-
-        if (monthlyRate === 0) {
-            // No interest case
-            const monthly = principal / numberOfPayments;
-            const total = monthly * numberOfPayments;
-            const totalInterest = total - principal;
-
-            setMonthlyPayment(monthly);
-            setTotalPaid(total);
-            setTotalInterestPaid(totalInterest);
-        } else {
-            // With interest case
-            const monthly =
-                (principal *
-                    (monthlyRate *
-                        Math.pow(1 + monthlyRate, numberOfPayments))) /
-                (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
-            const total = monthly * numberOfPayments;
-            const totalInterest = total - principal;
-
-            setMonthlyPayment(monthly);
-            setTotalPaid(total);
-            setTotalInterestPaid(totalInterest);
-        }
-    };
-
+const MortgageCalculatorPage = () => {
     return (
         <div className="min-h-screen p-6">
-            <h1 className="text-3xl font-bold text-center mb-6">
+            <h1 className="text-3xl font-bold text-center mb-4">
                 Mortgage Calculator
             </h1>
 
-            <div className="flex flex-wrap gap-8 justify-center max-w-5xl mx-auto">
-                <div className="bg-white p-6 rounded shadow-lg w-full md:w-1/3">
-                    <label className="block text-gray-700">
-                        Purchase Price ($)
-                    </label>
-                    <input
-                        type="number"
-                        value={purchasePrice}
-                        onChange={(e) =>
-                            setPurchasePrice(
-                                Math.max(0, parseFloat(e.target.value) || 0)
-                            )
-                        }
-                        className="w-full p-2 border rounded mb-4"
-                    />
-
-                    <label className="block text-gray-700">
-                        Down Payment ($)
-                    </label>
-                    <input
-                        type="number"
-                        value={downPayment}
-                        onChange={(e) =>
-                            setDownPayment(
-                                Math.max(0, parseFloat(e.target.value) || 0)
-                            )
-                        }
-                        className="w-full p-2 border rounded mb-4"
-                    />
-
-                    <label className="block text-gray-700">
-                        Interest Rate (%)
-                    </label>
-                    <input
-                        type="number"
-                        value={interestRate}
-                        onChange={(e) =>
-                            setInterestRate(
-                                Math.max(0, parseFloat(e.target.value) || 0)
-                            )
-                        }
-                        className="w-full p-2 border rounded mb-4"
-                    />
-
-                    <label className="block text-gray-700">
-                        Loan Length (years)
-                    </label>
-                    <input
-                        type="number"
-                        value={loanLength}
-                        onChange={(e) =>
-                            setLoanLength(
-                                Math.max(0, parseInt(e.target.value) || 0)
-                            )
-                        }
-                        className="w-full p-2 border rounded mb-4"
-                    />
-
-                    <div className="text-center mt-4">
-                        <ShinyButton
-                            href="#"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                calculateMortgage();
-                            }}
-                            className="bg-blue-500 text-white"
-                        >
-                            Calculate
-                        </ShinyButton>
-                    </div>
-                </div>
-
-                <div className="bg-white p-6 rounded shadow-lg w-full md:w-1/3">
-                    <h2 className="text-xl font-semibold mb-4">Results</h2>
-                    <div className="flex justify-between text-lg mb-2">
-                        <span>Monthly Payment:</span>
-                        <span className="font-bold text-red-500">
-                            $
-                            {monthlyPayment !== null
-                                ? monthlyPayment.toFixed(2)
-                                : "---"}
-                        </span>
-                    </div>
-                    <div className="flex justify-between text-lg mb-2">
-                        <span>Total Interest Paid:</span>
-                        <span className="font-bold text-red-500">
-                            $
-                            {totalInterestPaid !== null
-                                ? totalInterestPaid.toFixed(2)
-                                : "---"}
-                        </span>
-                    </div>
-                    <div className="flex justify-between text-lg">
-                        <span>Total Paid:</span>
-                        <span className="font-bold text-red-500">
-                            ${totalPaid !== null ? totalPaid.toFixed(2) : "---"}
-                        </span>
-                    </div>
-                </div>
+            {/* Server-Side Description */}
+            <div className="text-center mb-8 max-w-3xl mx-auto">
+                <p className="text-gray-700">
+                    Use our <strong>Mortgage Calculator</strong> to estimate
+                    your monthly mortgage payments, total interest, and total
+                    repayment costs. Designed for U.S. homebuyers, this tool
+                    helps you plan your home financing with accurate and
+                    personalized estimates.
+                </p>
             </div>
+
+            {/* Client-Side Component */}
+            <MortgageCalculator />
         </div>
     );
 };
 
-export default MortgageCalculator;
+export default MortgageCalculatorPage;
